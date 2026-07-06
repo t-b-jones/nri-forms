@@ -1,4 +1,4 @@
-# NRI Forms (pkg_nriforms) — v1.0.0
+# NRI Forms (pkg_nriforms) — v1.1.0
 
 Custom forms for Joomla 5/6 built on core mechanisms only. No third-party
 dependencies. Verified on Joomla 5.x and Joomla 6.1.1 (b/c plugin enabled).
@@ -20,8 +20,12 @@ Three extensions, one package:
 | `com_nriforms` | Context registration, site form view + submit, Submissions admin, router |
 | `plg_fields_nriinputs` | Email and Telephone field types (core EmailRule/TelRule validation, friendly messages, tel pattern) |
 | `plg_system_nriforms` | Creates each form's mail template on group save; keeps template placeholder tags in sync on field save |
+| `plg_task_nriforms` | Scheduler task deleting submissions whose per-form retention period has passed |
 
-**Both plugins must be enabled after install** (Joomla installs plugins disabled).
+**All three plugins must be enabled after install** (Joomla installs plugins
+disabled). For retention to work, also create a Scheduled Task: System >
+Scheduled Tasks > New > "NRI Forms - Purge Expired Submissions" (daily),
+and ensure the Scheduler's trigger (lazy or web cron) is configured.
 
 ## Creating a form (three screens)
 
@@ -64,6 +68,22 @@ Mail failures are logged to `administrator/logs/com_nriforms.mail.php`
 and shown on-screen to logged-in admins. Spam protection: CSRF token +
 honeypot (`nri_hp`; bots that fill it get a fake success, no row, no mail).
 
+## Storage, retention & encryption
+
+Per menu item (Storage & Retention tab):
+- **Store Submissions**: Use Global / Yes / No. "No" = mail-only; nothing
+  is stored on the server — the strongest option for sensitive forms.
+- **Retention (days)**: 0 keeps indefinitely; otherwise each submission is
+  stamped with an expiry date and deleted by the scheduled purge task.
+
+Component Options: **Encrypt Stored Submissions** encrypts the data column
+at rest (libsodium, keyed from the site secret). Caveats: the admin search
+filter cannot search inside encrypted rows (filter by form/date instead);
+changing the site secret in configuration.php makes previously encrypted
+rows unreadable — record this in server-rebuild procedures. Encryption
+protects against database exfiltration and stolen backups, not a full
+server compromise (the key lives on the same server).
+
 ## Styling
 
 The shipped layout is deliberately plain. Override per site at:
@@ -89,7 +109,11 @@ The shipped layout is deliberately plain. Override per site at:
 ## Deliberately not included (additive later, nothing blocks them)
 
 File uploads; CSV export of submissions; MX-record hardening of email
-validation; per-form summary-field selection for the Submissions list.
+validation; per-form summary-field selection for the Submissions list;
+com_privacy integration (data export/erasure requests); consent-checkbox
+guidance pending the institutional DPO conversation. Privacy policy link:
+forms should reference the applicable policy (e.g. the University of
+Greenwich privacy notice) via a required checkbox field or page text.
 
 ## Uninstall behaviour
 
