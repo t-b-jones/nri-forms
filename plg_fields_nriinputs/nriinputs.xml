@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="fields" method="upgrade">
+    <name>plg_fields_nriinputs</name>
+    <author>Tom / NRI Web</author>
+    <creationDate>2026-07</creationDate>
+    <copyright>(C) 2026 Natural Resources Institute</copyright>
+    <license>GNU General Public License version 2 or later</license>
+    <version>1.0.0</version>
+    <description>PLG_FIELDS_NRIINPUTS_XML_DESCRIPTION</description>
+
+    <namespace path="src">NRI\Plugin\Fields\Nriinputs</namespace>
+
+    <files>
+        <folder plugin="nriinputs">services</folder>
+        <folder>src</folder>
+        <folder>params</folder>
+        <folder>tmpl</folder>
+        <folder>language</folder>
+    </files>
+
+    <languages folder="language">
+        <language tag="en-GB">en-GB/plg_fields_nriinputs.ini</language>
+        <language tag="en-GB">en-GB/plg_fields_nriinputs.sys.ini</language>
+    </languages>
+</extension>

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="package" method="upgrade">
+    <name>NRI Forms Package</name>
+    <packagename>nriforms</packagename>
+    <author>Tom / NRI Web</author>
+    <creationDate>2026-07</creationDate>
+    <version>1.0.0</version>
+    <description>Forms component built on Joomla custom fields, plus Email/Tel field type plugin.</description>
+    <files folder="packages">
+        <file type="component" id="com_nriforms">com_nriforms.zip</file>
+        <file type="plugin" group="fields" id="nriinputs">plg_fields_nriinputs.zip</file>
+        <file type="plugin" group="system" id="nriforms">plg_system_nriforms.zip</file>
+    </files>
+</extension>

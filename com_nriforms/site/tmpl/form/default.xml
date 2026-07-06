@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+    <layout title="COM_NRIFORMS_FORM_VIEW_DEFAULT_TITLE">
+        <message>
+            <![CDATA[COM_NRIFORMS_FORM_VIEW_DEFAULT_DESC]]>
+        </message>
+    </layout>
+
+    <fields name="request" addfieldprefix="NRI\Component\Nriforms\Site\Field">
+        <fieldset name="request">
+            <field
+                name="group_id"
+                type="formgroup"
+                label="COM_NRIFORMS_FIELD_FORM_LABEL"
+                description="COM_NRIFORMS_FIELD_FORM_DESC"
+                required="true"
+            >
+                <option value="">JGLOBAL_SELECT_AN_OPTION</option>
+            </field>
+        </fieldset>
+    </fields>
+
+    <fields name="params">
+        <fieldset name="basic" label="COM_NRIFORMS_FIELDSET_FORM_LABEL">
+            <field
+                name="submit_label"
+                type="text"
+                label="COM_NRIFORMS_FIELD_SUBMIT_LABEL_LABEL"
+            />
+            <field
+                name="success_message"
+                type="textarea"
+                label="COM_NRIFORMS_FIELD_SUCCESS_MESSAGE_LABEL"
+                description="COM_NRIFORMS_FIELD_SUCCESS_MESSAGE_DESC"
+                rows="3"
+            />
+        </fieldset>
+        <fieldset name="mail" label="COM_NRIFORMS_FIELDSET_MAIL_LABEL" description="COM_NRIFORMS_FIELDSET_MAIL_DESC">
+            <field
+                name="recipient"
+                type="text"
+                label="COM_NRIFORMS_FIELD_RECIPIENT_LABEL"
+                description="COM_NRIFORMS_FIELD_RECIPIENT_DESC"
+            />
+            <field
+                name="replyto_field"
+                type="text"
+                label="COM_NRIFORMS_FIELD_REPLYTO_LABEL"
+                description="COM_NRIFORMS_FIELD_REPLYTO_DESC"
+                default="email"
+            />
+        </fieldset>
+    </fields>
+</metadata>

@@ -1,0 +1,5 @@
+/build/
+/dist/
+/packages/
+.DS_Store
+Thumbs.db
