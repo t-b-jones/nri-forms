@@ -32,7 +32,8 @@ function zipDir(string $sourceDir, string $zipPath): void
     );
 
     foreach ($files as $file) {
-        $zip->addFile($file->getPathname(), substr($file->getPathname(), strlen($sourceDir) + 1));
+        $relative = str_replace('\\', '/', substr($file->getPathname(), strlen($sourceDir) + 1));
+        $zip->addFile($file->getPathname(), $relative);
     }
 
     $zip->close();
