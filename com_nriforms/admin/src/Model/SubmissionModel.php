@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Factory;
 use Joomla\CMS\MVC\Model\AdminModel;
+use NRI\Component\Nriforms\Administrator\Helper\CryptoHelper;
 
 class SubmissionModel extends AdminModel
 {
@@ -36,7 +37,8 @@ class SubmissionModel extends AdminModel
         $item = parent::getItem($pk);
 
         if ($item && !empty($item->data)) {
-            $registry = json_decode($item->data, true);
+            $item->data = CryptoHelper::decrypt((string) $item->data);
+            $registry   = json_decode($item->data, true);
             $item->fields = \is_array($registry) ? $registry : [];
         }
 

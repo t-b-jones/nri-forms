@@ -10,6 +10,7 @@ namespace NRI\Component\Nriforms\Administrator\Model;
 defined('_JEXEC') or die;
 
 use Joomla\CMS\MVC\Model\ListModel;
+use NRI\Component\Nriforms\Administrator\Helper\CryptoHelper;
 
 class SubmissionsModel extends ListModel
 {
@@ -45,6 +46,17 @@ class SubmissionsModel extends ListModel
         $id .= ':' . $this->getState('filter.group_id');
 
         return parent::getStoreId($id);
+    }
+
+    public function getItems()
+    {
+        $items = parent::getItems();
+
+        foreach ($items as $item) {
+            $item->data = CryptoHelper::decrypt((string) $item->data);
+        }
+
+        return $items;
     }
 
     protected function getListQuery()

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="plugin" group="task" method="upgrade">
+    <name>plg_task_nriforms</name>
+    <author>Tom / NRI Web</author>
+    <creationDate>2026-07</creationDate>
+    <license>GNU General Public License version 2 or later</license>
+    <version>1.1.0</version>
+    <description>PLG_TASK_NRIFORMS_XML_DESCRIPTION</description>
+    <namespace path="src">NRI\Plugin\Task\Nriforms</namespace>
+    <files>
+        <folder plugin="nriforms">services</folder>
+        <folder>src</folder>
+        <folder>language</folder>
+    </files>
+    <languages folder="language">
+        <language tag="en-GB">en-GB/plg_task_nriforms.ini</language>
+        <language tag="en-GB">en-GB/plg_task_nriforms.sys.ini</language>
+    </languages>
+</extension>

@@ -1,10 +1,4 @@
 <?php
-
-/**
- * @package     NRI.Plugin
- * @subpackage  System.nriforms
- */
-
 defined('_JEXEC') or die;
 
 use Joomla\CMS\Extension\PluginInterface;
@@ -13,7 +7,7 @@ use Joomla\CMS\Plugin\PluginHelper;
 use Joomla\DI\Container;
 use Joomla\DI\ServiceProviderInterface;
 use Joomla\Event\DispatcherInterface;
-use NRI\Plugin\System\Nriforms\Extension\Nriforms;
+use NRI\Plugin\Task\Nriforms\Extension\Nriforms;
 
 return new class () implements ServiceProviderInterface {
     public function register(Container $container): void
@@ -23,7 +17,7 @@ return new class () implements ServiceProviderInterface {
             function (Container $container) {
                 $plugin = new Nriforms(
                     $container->get(DispatcherInterface::class),
-                    (array) PluginHelper::getPlugin('system', 'nriforms')
+                    (array) PluginHelper::getPlugin('task', 'nriforms')
                 );
                 $plugin->setApplication(Factory::getApplication());
 

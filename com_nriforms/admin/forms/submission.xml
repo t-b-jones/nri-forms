@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<form>
-    <field name="id" type="hidden" default="0" filter="integer" />
-    <field name="state" type="hidden" default="1" filter="integer" />
-</form>

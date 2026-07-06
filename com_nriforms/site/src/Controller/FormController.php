@@ -19,6 +19,7 @@ use Joomla\CMS\MVC\Controller\BaseController;
 use Joomla\CMS\Router\Route;
 use Joomla\CMS\String\PunycodeHelper;
 use Joomla\CMS\Uri\Uri;
+use NRI\Component\Nriforms\Administrator\Helper\CryptoHelper;
 use NRI\Component\Nriforms\Site\Helper\MailHelper;
 
 class FormController extends BaseController
@@ -107,19 +108,29 @@ class FormController extends BaseController
 
         // Save the submission first: it is the safety net if mail fails.
         $submissionId = 0;
+        $saveParam    = (string) $menu->getParams()->get('save_submissions', '');
+        $saveEnabled  = $saveParam === '' ? (int) $params->get('save_submissions', 1) === 1 : $saveParam === '1';
 
-        if ((int) $params->get('save_submissions', 1) === 1) {
+        if ($saveEnabled) {
             $table = $app->bootComponent('com_nriforms')
                 ->getMVCFactory()
                 ->createTable('Submission', 'Administrator');
+
+            $retention = (int) $menu->getParams()->get('retention_days', 0);
+            $dataJson  = json_encode($labelled);
+
+            if ((int) $params->get('encrypt_submissions', 0) === 1) {
+                $dataJson = CryptoHelper::encrypt($dataJson);
+            }
 
             $table->save(
                 [
                     'group_id'    => $groupId,
                     'group_title' => $group->title,
-                    'data'        => json_encode($labelled),
+                    'data'        => $dataJson,
                     'mail_sent'   => 0,
                     'state'       => 1,
+                    'expires'     => $retention > 0 ? Factory::getDate('+' . $retention . ' days')->toSql() : null,
                 ]
             );
             $submissionId = (int) $table->id;

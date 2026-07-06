@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `#__nriforms_submissions` (
     `data` mediumtext,
     `mail_sent` tinyint NOT NULL DEFAULT 0,
     `created` datetime NOT NULL,
+    `expires` datetime NULL DEFAULT NULL,
     `state` tinyint NOT NULL DEFAULT 1,
     PRIMARY KEY (`id`),
     KEY `idx_group_created` (`group_id`, `created`)
