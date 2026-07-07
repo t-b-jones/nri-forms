@@ -45,6 +45,7 @@ echo "Building pkg_nriforms $version\n";
 zipDir($root . '/com_nriforms', $root . '/build/com_nriforms.zip');
 zipDir($root . '/plg_fields_nriinputs', $root . '/build/plg_fields_nriinputs.zip');
 zipDir($root . '/plg_system_nriforms', $root . '/build/plg_system_nriforms.zip');
+zipDir($root . '/plg_task_nriforms', $root . '/build/plg_task_nriforms.zip');
 
 // Assemble the package zip: manifest + README + the three extension zips
 // under packages/.
@@ -62,6 +63,7 @@ $zip->addFile($root . '/README.md', 'README.md');
 $zip->addFile($root . '/build/com_nriforms.zip', 'packages/com_nriforms.zip');
 $zip->addFile($root . '/build/plg_fields_nriinputs.zip', 'packages/plg_fields_nriinputs.zip');
 $zip->addFile($root . '/build/plg_system_nriforms.zip', 'packages/plg_system_nriforms.zip');
+$zip->addFile($root . '/build/plg_task_nriforms.zip', 'packages/plg_task_nriforms.zip');
 $zip->close();
 
 echo "Package: dist/pkg_nriforms-$version.zip\n";
