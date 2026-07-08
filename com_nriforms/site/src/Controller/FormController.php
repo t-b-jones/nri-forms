@@ -11,6 +11,7 @@ defined('_JEXEC') or die;
 
 use Joomla\CMS\Component\ComponentHelper;
 use Joomla\CMS\Factory;
+use Joomla\CMS\HTML\HTMLHelper;
 use Joomla\CMS\Language\Text;
 use Joomla\CMS\Log\Log;
 use Joomla\CMS\Mail\MailerFactoryInterface;
@@ -257,7 +258,7 @@ class FormController extends BaseController
             'sitename'    => $this->app->get('sitename'),
             'siteurl'     => Uri::root(),
             'form_title'  => $group->title,
-            'date'        => Factory::getDate()->format(Text::_('DATE_FORMAT_LC2')),
+            'date'        => HTMLHelper::_('date', 'now', Text::_('DATE_FORMAT_LC2')),
             'fields'      => implode("\r\n", $plain),
             'fields_html' => '<table cellspacing="0" cellpadding="0" border="0">' . implode('', $html) . '</table>',
         ];
