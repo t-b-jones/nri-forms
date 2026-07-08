@@ -1,4 +1,5 @@
 <?php
+
 namespace NRI\Plugin\Task\Nriforms\Extension;
 
 defined('_JEXEC') or die;
@@ -34,19 +35,25 @@ final class Nriforms extends CMSPlugin implements SubscriberInterface
 
     private function purgeExpired(ExecuteTaskEvent $event): int
     {
-        $db  = Factory::getContainer()->get(DatabaseInterface::class);
-        $now = Factory::getDate()->toSql();
 
-        $query = $db->getQuery(true)
-            ->delete($db->quoteName('#__nriforms_submissions'))
-            ->where($db->quoteName('expires') . ' IS NOT NULL')
-            ->where($db->quoteName('expires') . ' < :now')
-            ->bind(':now', $now);
+        try {
+            $db  = Factory::getContainer()->get(DatabaseInterface::class);
+            $now = Factory::getDate()->toSql();
 
-        $db->setQuery($query)->execute();
+            $query = $db->getQuery(true)
+                ->delete($db->quoteName('#__nriforms_submissions'))
+                ->where($db->quoteName('expires') . ' IS NOT NULL')
+                ->where($db->quoteName('expires') . ' < :now')
+                ->bind(':now', $now);
 
-        $this->logTask(sprintf('Purged %d expired form submissions.', $db->getAffectedRows()));
+            $db->setQuery($query)->execute();
 
-        return Status::OK;
+            $this->logTask(sprintf('Purged %d expired form submissions.', $db->getAffectedRows()));
+
+            return Status::OK;
+        } catch (\Throwable $e) {
+            $this->logTask(sprintf('Error purging expired form submissions: %s', $e->getMessage()));
+            return Status::NO_RUN;
+        }
     }
 }
