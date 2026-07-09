@@ -102,6 +102,7 @@ final class Nriforms extends CMSPlugin implements SubscriberInterface
             ->where($db->quoteName('context') . ' = ' . $db->quote('com_nriforms.form'))
             ->where($db->quoteName('group_id') . ' = :gid')
             ->where($db->quoteName('state') . ' >= 0')
+            ->where($db->quoteName('type') . ' != ' . $db->quote('section'))
             ->order($db->quoteName('ordering') . ' ASC')
             ->bind(':gid', $groupId, ParameterType::INTEGER);
 

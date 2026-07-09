@@ -4,7 +4,7 @@
     <packagename>nriforms</packagename>
     <author>Tom / NRI Web</author>
     <creationDate>2026-07</creationDate>
-    <version>1.1.2</version>
+    <version>1.2.0</version>
     <description>Forms component built on Joomla custom fields, plus Email/Tel field type plugin.</description>
     <files folder="packages">
         <file type="component" id="com_nriforms">com_nriforms.zip</file>

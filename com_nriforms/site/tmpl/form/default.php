@@ -7,6 +7,9 @@
  * Deliberately plain markup. Copy to
  * templates/<yourtemplate>/html/com_nriforms/form/default.php
  * to restyle per site.
+ *
+ * "Section Heading" fields (spacers) open a new <section> block; field
+ * ordering in the backend defines section membership.
  */
 
 defined('_JEXEC') or die;
@@ -32,11 +35,22 @@ $action = Route::_('index.php?option=com_nriforms&task=form.submit&Itemid=' . $i
     <?php endif; ?>
 
     <form action="<?php echo $action; ?>" method="post" class="form-validate nriform__form" novalidate>
+        <?php $inSection = false; ?>
         <?php foreach ($this->form->getGroup('com_fields') as $field) : ?>
-            <?php echo $field->renderField(); ?>
+            <?php if (strtolower((string) $field->type) === 'spacer') : ?>
+                <?php if ($inSection) : ?>
+                    </section>
+                <?php endif; $inSection = true; ?>
+                <section class="nriform__section">
+                    <h2 class="nriform__section-heading"><?php echo $this->escape(Text::_($field->title)); ?></h2>
+            <?php else : ?>
+                <?php echo $field->renderField(); ?>
+            <?php endif; ?>
         <?php endforeach; ?>
+        <?php if ($inSection) : ?>
+            </section>
+        <?php endif; ?>
 
-        <?php // Honeypot: visually hidden, ignored by humans, filled by bots. ?>
         <div class="nriform__hp" aria-hidden="true" style="position:absolute;left:-9999px;top:auto;height:1px;overflow:hidden;">
             <label for="nri_hp_<?php echo (int) $this->group->id; ?>"><?php echo Text::_('COM_NRIFORMS_HP_LABEL'); ?></label>
             <input type="text" name="nri_hp" id="nri_hp_<?php echo (int) $this->group->id; ?>" value="" tabindex="-1" autocomplete="off">
