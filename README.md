@@ -1,7 +1,7 @@
-# NRI Forms (pkg_nriforms) — v1.1.0
+# NRI Forms (pkg_nriforms) — v1.1.2
 
 Custom forms for Joomla 5/6 built on core mechanisms only. No third-party
-dependencies. Verified on Joomla 5.x and Joomla 6.1.1 (b/c plugin enabled).
+dependencies. Joomla 6-native: verified on 6.1.1 with the backwards-compatibility plugin DISABLED, and on Joomla 5.x.
 
 ## Architecture
 
@@ -38,7 +38,10 @@ and ensure the Scheduler's trigger (lazy or web cron) is configured.
 3. **Menus** — new item, type *Forms > Display a Form*. Pick the form on
    the Details tab. Email tab: **Recipient(s)** (comma-separated) and
    **Reply-To Field Name** (default `email` — the submitted value of that
-   field becomes the email's Reply-To).
+   field becomes the email's Reply-To). Storage & Retention tab: store
+   toggle and retention days. Page heading: standard Page Display tab —
+   Show Page Heading = Yes with Page Heading left blank displays the
+   form's title.
 
 ## Email configuration doctrine
 
@@ -114,6 +117,21 @@ com_privacy integration (data export/erasure requests); consent-checkbox
 guidance pending the institutional DPO conversation. Privacy policy link:
 forms should reference the applicable policy (e.g. the University of
 Greenwich privacy notice) via a required checkbox field or page text.
+
+## Development workflow
+
+The git repository is the source of truth; installed Joomla files are
+build products. Release ritual:
+
+1. Edit source. 2. `php bump.php <version>` (updates all four manifests —
+   versions are kept in lockstep deliberately). 3. `php build.php` →
+   `dist/pkg_nriforms-<version>.zip`. 4. Test-install on dev.
+5. `git add -A && git commit`, `git tag v<version>`, `git push`,
+   `git push --tags`. 6. GitHub release from the tag with the dist zip
+   attached. `build/`, `dist/` are gitignored artifacts.
+
+Task debugging note: web-triggered Scheduler runs log poorly; use
+`php cli/joomla.php scheduler:run --id=<id>` for real error output.
 
 ## Uninstall behaviour
 
