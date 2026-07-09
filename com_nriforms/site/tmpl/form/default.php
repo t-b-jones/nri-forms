@@ -40,29 +40,32 @@ $action = Route::_('index.php?option=com_nriforms&task=form.submit&Itemid=' . $i
             <?php if (strtolower((string) $field->type) === 'spacer') : ?>
                 <?php if ($inSection) : ?>
                     </section>
-                <?php endif; $inSection = true; ?>
+                <?php endif;
+                $inSection = true; ?>
                 <?php $hTag = 'h' . min(6, max(1, (int) $field->getAttribute('heading', 2))); ?>
                 <section class="nriform__section">
-                    <<?php echo $hTag; ?> class="nriform__section-heading"><?php echo $this->escape(Text::_($field->title)); ?></<?php echo $hTag; ?>>
-            <?php else : ?>
-                <?php echo $field->renderField(); ?>
+                    <<?php echo $hTag; ?> class="nriform__section-heading">
+                        <?php echo $this->escape(Text::_($field->getAttribute('label') ?: $field->getAttribute('title') ?: $field->name)); ?>
+                    </<?php echo $hTag; ?>>
+                <?php else : ?>
+                    <?php echo $field->renderField(); ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+            <?php if ($inSection) : ?>
+                </section>
             <?php endif; ?>
-        <?php endforeach; ?>
-        <?php if ($inSection) : ?>
-            </section>
-        <?php endif; ?>
 
-        <div class="nriform__hp" aria-hidden="true" style="position:absolute;left:-9999px;top:auto;height:1px;overflow:hidden;">
-            <label for="nri_hp_<?php echo (int) $this->group->id; ?>"><?php echo Text::_('COM_NRIFORMS_HP_LABEL'); ?></label>
-            <input type="text" name="nri_hp" id="nri_hp_<?php echo (int) $this->group->id; ?>" value="" tabindex="-1" autocomplete="off">
-        </div>
+            <div class="nriform__hp" aria-hidden="true" style="position:absolute;left:-9999px;top:auto;height:1px;overflow:hidden;">
+                <label for="nri_hp_<?php echo (int) $this->group->id; ?>"><?php echo Text::_('COM_NRIFORMS_HP_LABEL'); ?></label>
+                <input type="text" name="nri_hp" id="nri_hp_<?php echo (int) $this->group->id; ?>" value="" tabindex="-1" autocomplete="off">
+            </div>
 
-        <div class="nriform__actions">
-            <button type="submit" class="btn btn-primary nriform__submit">
-                <?php echo $this->escape($this->params->get('submit_label') ?: Text::_('COM_NRIFORMS_SUBMIT')); ?>
-            </button>
-        </div>
+            <div class="nriform__actions">
+                <button type="submit" class="btn btn-primary nriform__submit">
+                    <?php echo $this->escape($this->params->get('submit_label') ?: Text::_('COM_NRIFORMS_SUBMIT')); ?>
+                </button>
+            </div>
 
-        <?php echo HTMLHelper::_('form.token'); ?>
+            <?php echo HTMLHelper::_('form.token'); ?>
     </form>
 </div>
