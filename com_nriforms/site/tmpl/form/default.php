@@ -41,8 +41,9 @@ $action = Route::_('index.php?option=com_nriforms&task=form.submit&Itemid=' . $i
                 <?php if ($inSection) : ?>
                     </section>
                 <?php endif; $inSection = true; ?>
+                <?php $hTag = 'h' . min(6, max(1, (int) $field->getAttribute('heading', 2))); ?>
                 <section class="nriform__section">
-                    <h2 class="nriform__section-heading"><?php echo $this->escape(Text::_($field->title)); ?></h2>
+                    <<?php echo $hTag; ?> class="nriform__section-heading"><?php echo $this->escape(Text::_($field->title)); ?></<?php echo $hTag; ?>>
             <?php else : ?>
                 <?php echo $field->renderField(); ?>
             <?php endif; ?>

@@ -25,6 +25,7 @@ final class Nriinputs extends FieldsPlugin
             // The form layout detects spacers and opens a new <section>.
             $fieldNode->setAttribute('type', 'spacer');
             $fieldNode->setAttribute('class', 'nriform-section');
+            $fieldNode->setAttribute('heading', (string) ((int) $field->fieldparams->get('heading', 2) ?: 2));
 
             return $fieldNode;
         }

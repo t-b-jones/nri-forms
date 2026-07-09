@@ -43,6 +43,14 @@ class HtmlView extends BaseHtmlView
         $this->params = $params;
         $this->form   = $model->getFormObject($groupId);
 
+        // Alternative layout selected on the menu item (componentlayout
+        // field). "template:layout" syntax is handled by setLayout().
+        $layout = (string) $params->get('form_layout', '');
+
+        if ($layout !== '' && $layout !== '_:default') {
+            $this->setLayout($layout);
+        }
+
         // Re-populate after a failed validation round trip.
         $stored = $app->getUserState('com_nriforms.form.' . $groupId . '.data');
 

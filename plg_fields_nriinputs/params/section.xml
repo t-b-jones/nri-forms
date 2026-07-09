@@ -1,6 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
     <fields name="fieldparams">
-        <fieldset name="fieldparams" />
+        <fieldset name="fieldparams">
+            <field
+                name="heading"
+                type="list"
+                label="PLG_FIELDS_NRIINPUTS_SECTION_HEADING_LABEL"
+                description="PLG_FIELDS_NRIINPUTS_SECTION_HEADING_DESC"
+                default="2"
+                filter="integer"
+                validate="options"
+            >
+                <option value="1">h1</option>
+                <option value="2">h2</option>
+                <option value="3">h3</option>
+                <option value="4">h4</option>
+                <option value="5">h5</option>
+                <option value="6">h6</option>
+            </field>
+        </fieldset>
     </fields>
 </form>

@@ -23,6 +23,14 @@
     <fields name="params">
         <fieldset name="basic" label="COM_NRIFORMS_FIELDSET_FORM_LABEL">
             <field
+                name="form_layout"
+                type="componentlayout"
+                label="JFIELD_ALT_LAYOUT_LABEL"
+                class="form-select"
+                extension="com_nriforms"
+                view="form"
+            />
+            <field
                 name="submit_label"
                 type="text"
                 label="COM_NRIFORMS_FIELD_SUBMIT_LABEL_LABEL"
