@@ -35,36 +35,6 @@
                 type="text"
                 label="COM_NRIFORMS_FIELD_SUBMIT_LABEL_LABEL"
             />
-            <field
-                name="success_message"
-                type="textarea"
-                label="COM_NRIFORMS_FIELD_SUCCESS_MESSAGE_LABEL"
-                description="COM_NRIFORMS_FIELD_SUCCESS_MESSAGE_DESC"
-                rows="3"
-            />
-        </fieldset>
-        <fieldset name="storage" label="COM_NRIFORMS_FIELDSET_STORAGE_LABEL" description="COM_NRIFORMS_FIELDSET_STORAGE_DESC">
-            <field name="save_submissions" type="list" label="COM_NRIFORMS_FIELD_SAVE_LABEL" default="" filter="string">
-                <option value="">JGLOBAL_USE_GLOBAL</option>
-                <option value="1">JYES</option>
-                <option value="0">JNO</option>
-            </field>
-            <field name="retention_days" type="number" label="COM_NRIFORMS_FIELD_RETENTION_LABEL" description="COM_NRIFORMS_FIELD_RETENTION_DESC" default="0" min="0" filter="integer" />
-        </fieldset>
-        <fieldset name="mail" label="COM_NRIFORMS_FIELDSET_MAIL_LABEL" description="COM_NRIFORMS_FIELDSET_MAIL_DESC">
-            <field
-                name="recipient"
-                type="text"
-                label="COM_NRIFORMS_FIELD_RECIPIENT_LABEL"
-                description="COM_NRIFORMS_FIELD_RECIPIENT_DESC"
-            />
-            <field
-                name="replyto_field"
-                type="text"
-                label="COM_NRIFORMS_FIELD_REPLYTO_LABEL"
-                description="COM_NRIFORMS_FIELD_REPLYTO_DESC"
-                default="email"
-            />
         </fieldset>
     </fields>
 </metadata>

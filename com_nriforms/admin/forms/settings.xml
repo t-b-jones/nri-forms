@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form addfieldprefix="Joomla\Component\Content\Administrator\Field">
+    <field name="id" type="hidden" default="0" filter="integer" />
+    <field name="group_id" type="hidden" default="0" filter="integer" />
+
+    <fieldset name="mail" label="COM_NRIFORMS_FIELDSET_MAIL_LABEL">
+        <field name="recipient" type="text" label="COM_NRIFORMS_FIELD_RECIPIENT_LABEL" description="COM_NRIFORMS_FIELD_RECIPIENT_DESC" />
+        <field name="replyto_field" type="text" label="COM_NRIFORMS_FIELD_REPLYTO_LABEL" description="COM_NRIFORMS_FIELD_REPLYTO_DESC" default="email" />
+    </fieldset>
+
+    <fieldset name="storage" label="COM_NRIFORMS_FIELDSET_STORAGE_LABEL">
+        <field name="save_submissions" type="radio" layout="joomla.form.field.radio.switcher" label="COM_NRIFORMS_FIELD_SAVE_LABEL" default="1" filter="integer">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="retention_days" type="number" label="COM_NRIFORMS_FIELD_RETENTION_LABEL" description="COM_NRIFORMS_FIELD_RETENTION_DESC" default="0" min="0" filter="integer" />
+        <field name="encrypt" type="radio" layout="joomla.form.field.radio.switcher" label="COM_NRIFORMS_CONFIG_ENCRYPT_LABEL" default="0" filter="integer">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+    </fieldset>
+
+    <fieldset name="consent" label="COM_NRIFORMS_FIELDSET_CONSENT_LABEL">
+        <field name="consent_enabled" type="radio" layout="joomla.form.field.radio.switcher" label="COM_NRIFORMS_FIELD_CONSENT_LABEL" default="0" filter="integer">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="consent_label" type="text" label="COM_NRIFORMS_FIELD_CONSENT_TEXT_LABEL" showon="consent_enabled:1" />
+        <field name="consent_article_id" type="modal_article" label="COM_NRIFORMS_FIELD_CONSENT_ARTICLE_LABEL" select="true" clear="true" showon="consent_enabled:1" />
+        <field name="terms_enabled" type="radio" layout="joomla.form.field.radio.switcher" label="COM_NRIFORMS_FIELD_TERMS_LABEL" default="0" filter="integer">
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="terms_label" type="text" label="COM_NRIFORMS_FIELD_TERMS_TEXT_LABEL" showon="terms_enabled:1" />
+        <field name="terms_article_id" type="modal_article" label="COM_NRIFORMS_FIELD_TERMS_ARTICLE_LABEL" select="true" clear="true" showon="terms_enabled:1" />
+    </fieldset>
+
+    <fieldset name="protection" label="COM_NRIFORMS_FIELDSET_PROTECTION_LABEL">
+        <field name="captcha" type="plugins" folder="captcha" label="COM_NRIFORMS_FIELD_CAPTCHA_LABEL" description="COM_NRIFORMS_FIELD_CAPTCHA_DESC" filter="cmd" useglobal="true">
+            <option value="0">JOPTION_DO_NOT_USE</option>
+        </field>
+    </fieldset>
+
+    <fieldset name="aftersubmit" label="COM_NRIFORMS_FIELDSET_AFTER_LABEL">
+        <field name="success_message" type="textarea" label="COM_NRIFORMS_FIELD_SUCCESS_MESSAGE_LABEL" rows="3" />
+        <field name="redirect_url" type="url" label="COM_NRIFORMS_FIELD_REDIRECT_LABEL" description="COM_NRIFORMS_FIELD_REDIRECT_DESC" filter="url" />
+    </fieldset>
+</form>

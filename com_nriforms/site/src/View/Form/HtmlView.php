@@ -23,6 +23,12 @@ class HtmlView extends BaseHtmlView
     /** @var \Joomla\Registry\Registry Menu item params */
     public $params;
 
+    /** @var object|null Per-form settings row */
+    public $settings;
+
+    /** @var bool */
+    public $captchaEnabled = false;
+
     public function display($tpl = null): void
     {
         $app    = \Joomla\CMS\Factory::getApplication();
@@ -42,6 +48,20 @@ class HtmlView extends BaseHtmlView
         $this->group  = $group;
         $this->params = $params;
         $this->form   = $model->getFormObject($groupId);
+
+        $this->settings = $model->getSettings($groupId);
+
+        // Captcha, com_contact-style: per-form setting, '' = Use Global,
+        // '0' = disabled, otherwise a captcha plugin name.
+        $captcha = $this->settings->captcha ?? '';
+        $captcha = $captcha !== '' ? $captcha : (string) $app->get('captcha', '0');
+
+        if ($captcha && $captcha !== '0' && \Joomla\CMS\Plugin\PluginHelper::isEnabled('captcha', $captcha)) {
+            $this->captchaEnabled = true;
+            $this->form->load(
+                '<form><fieldset name="captcha"><field name="captcha" type="captcha" label="COM_NRIFORMS_CAPTCHA_LABEL" validate="captcha" plugin="' . htmlspecialchars($captcha, ENT_QUOTES) . '" /></fieldset></form>'
+            );
+        }
 
         // Alternative layout selected on the menu item (componentlayout
         // field). "template:layout" syntax is handled by setLayout().

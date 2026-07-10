@@ -36,6 +36,19 @@ class FormModel extends BaseDatabaseModel
         return $db->setQuery($query)->loadObject();
     }
 
+    /** Per-form settings row, or null (legacy: menu params apply). */
+    public function getSettings(int $groupId): ?object
+    {
+        $db    = Factory::getContainer()->get(DatabaseInterface::class);
+        $query = $db->getQuery(true)
+            ->select('*')
+            ->from($db->quoteName('#__nriforms_forms'))
+            ->where($db->quoteName('group_id') . ' = :gid')
+            ->bind(':gid', $groupId, ParameterType::INTEGER);
+
+        return $db->setQuery($query)->loadObject();
+    }
+
     /**
      * Get the published com_fields fields belonging to a group, in order.
      *

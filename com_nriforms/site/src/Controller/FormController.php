@@ -46,7 +46,7 @@ class FormController extends BaseController
 
         // Honeypot: bots fill it, humans never see it. Pretend success.
         if ($input->post->getString('nri_hp', '') !== '') {
-            $app->enqueueMessage($this->successMessage($menu), 'message');
+            $app->enqueueMessage($this->successMessage(), 'message');
             $this->setRedirect($returnUrl);
 
             return;
@@ -60,8 +60,32 @@ class FormController extends BaseController
             throw new \RuntimeException(Text::_('JERROR_PAGE_NOT_FOUND'), 404);
         }
 
+        $settings = $model->getSettings($groupId);
+
         $form = $model->getFormObject($groupId);
+
+        // Captcha: mirror the view's setup so validate() runs the rule.
+        $captcha = $settings->captcha ?? '';
+        $captcha = $captcha !== '' ? $captcha : (string) $app->get('captcha', '0');
+
+        if ($captcha && $captcha !== '0' && \Joomla\CMS\Plugin\PluginHelper::isEnabled('captcha', $captcha)) {
+            $form->load(
+                '<form><fieldset name="captcha"><field name="captcha" type="captcha" label="COM_NRIFORMS_CAPTCHA_LABEL" validate="captcha" plugin="' . htmlspecialchars($captcha, ENT_QUOTES) . '" /></fieldset></form>'
+            );
+        }
+
         $data = $input->post->get('jform', [], 'array');
+
+        // Consent / terms: required checkboxes when enabled.
+        foreach ([['consent', 'nri_consent'], ['terms', 'nri_terms']] as [$key, $field]) {
+            if ((int) ($settings->{$key . '_enabled'} ?? 0) === 1 && $input->post->getInt($field, 0) !== 1) {
+                $app->enqueueMessage(Text::sprintf('COM_NRIFORMS_ERR_CONSENT_REQUIRED', $settings->{$key . '_label'} ?: Text::_('COM_NRIFORMS_' . strtoupper($key) . '_DEFAULT_LABEL')), 'warning');
+                $app->setUserState('com_nriforms.form.' . $groupId . '.data', $data);
+                $this->setRedirect($returnUrl);
+
+                return;
+            }
+        }
 
         // Server-side conditionality: hidden fields cannot be required.
         $model->relaxConditionalFields($form, $data);
@@ -90,6 +114,16 @@ class FormController extends BaseController
         $labelled    = [];
         $groupFields = $model->getGroupFields($groupId);
 
+        foreach ([['consent', 'nri_consent'], ['terms', 'nri_terms']] as [$key, $field]) {
+            if ((int) ($settings->{$key . '_enabled'} ?? 0) === 1) {
+                $labelled[] = [
+                    'name'  => $field,
+                    'label' => $settings->{$key . '_label'} ?: Text::_('COM_NRIFORMS_' . strtoupper($key) . '_DEFAULT_LABEL'),
+                    'value' => Text::_('JYES'),
+                ];
+            }
+        }
+
         foreach ($groupFields as $field) {
             $value = $data['com_fields'][$field->name] ?? null;
 
@@ -108,18 +142,22 @@ class FormController extends BaseController
 
         // Save the submission first: it is the safety net if mail fails.
         $submissionId = 0;
-        $saveParam    = (string) $menu->getParams()->get('save_submissions', '');
-        $saveEnabled  = $saveParam === '' ? (int) $params->get('save_submissions', 1) === 1 : $saveParam === '1';
+
+        $saveEnabled = $settings
+            ? (int) $settings->save_submissions === 1
+            : (int) $params->get('save_submissions', 1) === 1;
 
         if ($saveEnabled) {
             $table = $app->bootComponent('com_nriforms')
                 ->getMVCFactory()
                 ->createTable('Submission', 'Administrator');
 
-            $retention = (int) $menu->getParams()->get('retention_days', 0);
+            $retention = $settings ? (int) $settings->retention_days : 0;
             $dataJson  = json_encode($labelled);
 
-            if ((int) $params->get('encrypt_submissions', 0) === 1) {
+            $encrypt = $settings ? (int) $settings->encrypt === 1 : (int) $params->get('encrypt_submissions', 0) === 1;
+
+            if ($encrypt) {
                 $dataJson = CryptoHelper::encrypt($dataJson);
             }
 
@@ -136,7 +174,7 @@ class FormController extends BaseController
             $submissionId = (int) $table->id;
         }
 
-        $mailError = $this->sendMail($menu, $group, $labelled, $params, $groupFields);
+        $mailError = $this->sendMail($menu, $group, $labelled, $params, $groupFields, $settings);
         $mailOk    = ($mailError === null);
 
         if (!$mailOk) {
@@ -167,13 +205,18 @@ class FormController extends BaseController
             return;
         }
 
-        $app->enqueueMessage($this->successMessage($menu), 'message');
-        $this->setRedirect($returnUrl);
+        $app->enqueueMessage($this->successMessage($settings), 'message');
+
+        $redirect   = trim((string) ($settings->redirect_url ?? ''));
+        $isRelative = str_starts_with($redirect, '/') && !str_starts_with($redirect, '//');
+        $ok         = $redirect !== '' && ($isRelative || \Joomla\CMS\Uri\Uri::isInternal($redirect));
+
+        $this->setRedirect($ok ? $redirect : $returnUrl);
     }
 
-    private function successMessage($menu): string
+    private function successMessage(?object $settings = null): string
     {
-        $message = trim((string) $menu->getParams()->get('success_message', ''));
+        $message = trim((string) ($settings->success_message ?? ''));
 
         return $message !== '' ? $message : Text::_('COM_NRIFORMS_SUBMIT_SUCCESS');
     }
@@ -186,10 +229,9 @@ class FormController extends BaseController
      *
      * @return string|null  Null on success, otherwise the failure reason.
      */
-    private function sendMail($menu, object $group, array $labelled, $params, array $groupFields): ?string
+    private function sendMail($menu, object $group, array $labelled, $params, array $groupFields, ?object $settings = null): ?string
     {
-        $menuParams = $menu->getParams();
-        $recipients = $this->resolveRecipients($menuParams, $params);
+        $recipients = $this->resolveRecipients($params, $settings);
 
         if ($recipients === []) {
             return Text::_('COM_NRIFORMS_MAIL_ERR_NO_RECIPIENT');
@@ -208,7 +250,7 @@ class FormController extends BaseController
             );
 
             $mailer = Factory::getContainer()->get(MailerFactoryInterface::class)->createMailer();
-            $this->applyReplyTo($mailer, $menuParams, $labelled);
+            $this->applyReplyTo($mailer, $labelled, $settings);
 
             $template = new MailTemplate(
                 MailHelper::templateId((int) $group->id),
@@ -225,7 +267,7 @@ class FormController extends BaseController
             return $template->send() ? null : Text::_('COM_NRIFORMS_MAIL_ERR_SEND_FAILED');
         } catch (\Throwable $e) {
             // Template path failed: fall back to the plain built-in mail.
-            $fallback = $this->sendPlainMail($menuParams, $group, $labelled, $recipients);
+            $fallback = $this->sendPlainMail($group, $labelled, $recipients, $settings);
 
             if ($fallback === null) {
                 return null;
@@ -285,9 +327,9 @@ class FormController extends BaseController
      *
      * @return string[]
      */
-    private function resolveRecipients($menuParams, $params): array
+    private function resolveRecipients($params, ?object $settings = null): array
     {
-        $recipients = trim((string) $menuParams->get('recipient', ''));
+        $recipients = trim((string) ($settings->recipient ?? ''));
 
         if ($recipients === '') {
             $recipients = trim((string) $params->get('default_recipient', ''));
@@ -311,12 +353,15 @@ class FormController extends BaseController
     /**
      * Reply-To: the value of the configured field, if present and sane.
      */
-    private function applyReplyTo($mailer, $menuParams, array $labelled): void
+    private function applyReplyTo($mailer, array $labelled, ?object $settings = null): void
     {
-        $replyToField = (string) $menuParams->get('replyto_field', 'email');
+        $replyToField = trim((string) ($settings->replyto_field ?? '')) ?: 'email';
 
         foreach ($labelled as $entry) {
             if ($entry['name'] === $replyToField && \is_string($entry['value']) && filter_var($entry['value'], FILTER_VALIDATE_EMAIL)) {
+                // The submitter is the sole reply target: drop the global
+                // Reply-To the mailer factory pre-applied.
+                $mailer->clearReplyTos();
                 $mailer->addReplyTo(PunycodeHelper::emailToPunycode($entry['value']));
                 break;
             }
@@ -329,13 +374,9 @@ class FormController extends BaseController
      *
      * @return string|null  Null on success, otherwise the failure reason.
      */
-    private function sendPlainMail($menuParams, object $group, array $labelled, array $recipients): ?string
+    private function sendPlainMail(object $group, array $labelled, array $recipients, ?object $settings = null): ?string
     {
-        $subject = trim((string) $menuParams->get('subject', ''));
-
-        if ($subject === '') {
-            $subject = Text::sprintf('COM_NRIFORMS_MAIL_SUBJECT', $group->title, Uri::getInstance()->toString(['host']));
-        }
+        $subject = Text::sprintf('COM_NRIFORMS_MAIL_SUBJECT', $group->title, Uri::getInstance()->toString(['host']));
 
         $lines = [];
 
@@ -353,7 +394,7 @@ class FormController extends BaseController
                 $mailer->addRecipient($recipient);
             }
 
-            $this->applyReplyTo($mailer, $menuParams, $labelled);
+            $this->applyReplyTo($mailer, $labelled, $settings);
 
             $mailer->setSubject($subject);
             $mailer->setBody($body);
